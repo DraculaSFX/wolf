@@ -3,121 +3,172 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Viral Video Hub</title>
+<title>My Viral Video Playlist</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   body {
     font-family: 'Inter', sans-serif;
-    background-color: #0f0f0f;
-    color: #fff;
     margin: 0;
-    padding: 0;
+    background: #0e0e0e;
+    color: white;
   }
   header {
+    padding: 1rem;
+    background: #111;
     text-align: center;
-    padding: 20px;
-    background: linear-gradient(90deg, #ff4d4d, #6600ff);
     font-size: 1.5rem;
     font-weight: 600;
+    border-bottom: 2px solid #222;
+  }
+  .controls {
+    padding: 1rem;
+    background: #181818;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .controls input {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+  }
+  .controls button {
+    padding: 0.5rem 1rem;
+    background: #ff0050;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .controls button:hover {
+    background: #e60048;
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
   }
-  .video-container {
-    position: relative;
-    background: #1c1c1c;
-    border-radius: 10px;
+  .video-card {
+    background: #1a1a1a;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    transition: transform 0.2s ease;
+    position: relative;
+    transition: transform 0.2s;
   }
-  .video-container:hover {
+  .video-card:hover {
     transform: scale(1.02);
   }
-  iframe, video {
-    width: 100%;
-    height: 100%;
-    display: block;
-    aspect-ratio: 9/16;
+  .remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.6);
     border: none;
-  }
-  .controls {
-    text-align: center;
-    padding: 10px;
-  }
-  button {
-    background: #ff4d4d;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    margin: 5px;
+    color: white;
+    font-size: 14px;
+    padding: 4px 6px;
     cursor: pointer;
-    border-radius: 5px;
-    font-weight: 600;
-    transition: background 0.3s;
+    border-radius: 4px;
   }
-  button:hover {
-    background: #e60000;
+  .share-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.6);
+    border: none;
+    color: white;
+    font-size: 14px;
+    padding: 4px 6px;
+    cursor: pointer;
+    border-radius: 4px;
   }
 </style>
 </head>
 <body>
-<header>🔥 Viral Video Hub 🔥</header>
-<div class="controls">
-  <input type="text" id="videoLink" placeholder="Paste video link here" style="padding:8px;width:250px;">
-  <button onclick="addVideo()">Add Video</button>
-</div>
-<div id="videoGrid" class="grid"></div>
+  <header>🎥 My Viral Playlist</header>
+  <div class="controls">
+    <input type="text" id="videoLink" placeholder="Paste video link here..." />
+    <button onclick="addVideo()">Add Video</button>
+  </div>
+  <div id="videoGrid" class="grid"></div>
+
 <script>
-const videoGrid = document.getElementById('videoGrid');
-let videos = [
-  { type: 'tiktok', src: 'https://www.tiktok.com/@draculafx/video/7538203944099515670&autoplay=1&muted=1' },
-  { type: 'rumble', src: 'https://rumble.com/v6xkdww-the-funniest-videos-on-the-internet.html?mref=ht1nh&mc=by1wc?autoplay=2' },
-  { type: 'bilibili', src: 'player.bilibili.com/player.html?isOutside=true&aid=115026505570281&bvid=BV1rYbzzNEVs&cid=31690653726&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>&autoplay=1&muted=1' },
-  { type: 'facebook', src: '&autoplay=1&mute=1' }
-];
+  const grid = document.getElementById('videoGrid');
+  let videos = [];
 
-function renderVideos(batch) {
-  batch.forEach(v => {
-    const container = document.createElement('div');
-    container.className = 'video-container';
-    let iframe = document.createElement('iframe');
-    iframe.src = v.src;
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.setAttribute('allowfullscreen', '');
-    container.appendChild(iframe);
-    let shareBtn = document.createElement('button');
-    shareBtn.textContent = 'Share';
-    shareBtn.onclick = () => {
-      const url = v.src + (v.src.includes('?') ? '&' : '?') + 'utm_source=viralhub&utm_medium=share';
-      navigator.clipboard.writeText(url);
-      alert('Link copied with UTM!');
-    };
-    container.appendChild(shareBtn);
-    videoGrid.appendChild(container);
-  });
-}
+  function detectPlatform(url) {
+    if (url.includes('tiktok.com')) return 'tiktok';
+    if (url.includes('bilibili.com')) return 'bilibili';
+    if (url.includes('facebook.com')) return 'facebook';
+    if (url.includes('rumble.com')) return 'rumble';
+    if (url.match(/\.mp4$/)) return 'mp4';
+    return 'unknown';
+  }
 
-renderVideos(videos);
+  function createEmbed(url) {
+    const platform = detectPlatform(url);
+    if (platform === 'tiktok') {
+      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
+    }
+    if (platform === 'bilibili') {
+      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
+    }
+    if (platform === 'facebook') {
+      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
+    }
+    if (platform === 'rumble') {
+      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
+    }
+    if (platform === 'mp4') {
+      return `<video src="${url}" autoplay muted loop playsinline controls></video>`;
+    }
+    return `<a href="${url}" target="_blank">Open Video</a>`;
+  }
 
-function addVideo() {
-  const link = document.getElementById('videoLink').value;
-  if(link) {
-    videos.push({ type: 'custom', src: link });
-    renderVideos([{ type: 'custom', src: link }]);
+  function addVideo() {
+    const url = document.getElementById('videoLink').value.trim();
+    if (!url) return;
+    videos.push(url);
+    renderVideos();
     document.getElementById('videoLink').value = '';
   }
-}
 
-window.addEventListener('scroll', () => {
-  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-    // load more videos (demo duplicates)
-    renderVideos(videos);
+  function removeVideo(index) {
+    videos.splice(index, 1);
+    renderVideos();
   }
-});
+
+  function shareVideo(url) {
+    const shareUrl = `${url}?utm_source=myplaylist&utm_medium=share_button`;
+    navigator.clipboard.writeText(shareUrl);
+    alert('Share link copied: ' + shareUrl);
+  }
+
+  function renderVideos() {
+    grid.innerHTML = '';
+    videos.forEach((url, index) => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.innerHTML = `
+        ${createEmbed(url)}
+        <button class="remove-btn" onclick="removeVideo(${index})">✖</button>
+        <button class="share-btn" onclick="shareVideo('${url}')">🔗</button>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // Infinite scroll simulation
+  window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+      // Load more if needed
+    }
+  });
 </script>
 </body>
 </html>
