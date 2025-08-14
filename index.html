@@ -1,265 +1,123 @@
-<!doctype html>
-<html lang="ro">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Viral Wall Pro — Multi‑Platform Video Showcase</title>
-<meta name="description" content="Pin video sus + grid cu embed TikTok, Bilibili, Rumble, Facebook. Autoplay muted, infinite scroll, playlist editor UI, UTM analytics in share links. Single file for GitHub Pages." />
-<meta name="theme-color" content="#0b0b0f" />
-
-<!-- Theme (logo, colors, font) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Viral Video Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#07070b;--panel:#0f1216;--muted:#9aa3af;--line:#1f2430;--accent:#7c3aed;--accent-2:#06b6d4;--glass:rgba(255,255,255,0.06)}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#050508 0%, #0a0b0f 100%);color:#eef2f8;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-a{color:inherit}
-.container{max-width:1200px;margin:18px auto;padding:12px}
-.header{display:flex;align-items:center;gap:14px;margin-bottom:12px}
-.logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:800;color:white}
-.site-title{font-weight:800;font-size:18px;letter-spacing:0.4px}
-.header-sub{color:var(--muted);font-size:13px}
-.controls{display:flex;gap:8px;margin-left:auto;align-items:center}
-.btn{background:transparent;border:1px solid var(--line);padding:8px 12px;border-radius:10px;color:inherit;font-weight:700;cursor:pointer}
-.btn.primary{background:linear-gradient(180deg,var(--accent),#5b21b6);box-shadow:0 8px 30px rgba(124,58,237,0.12)}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
-.input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit}
-.row{display:flex;gap:8px}
-.small{font-size:12px;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.card .top{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line)}
-.card .holder{position:relative;width:100%;aspect-ratio:9/16;background:#000}
-.card iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.meta{padding:10px}
-.title{font-weight:700;margin:0 0 6px 0}
-.source{color:var(--muted);font-size:12px;margin:0}
-.pin{position:sticky;top:14px;z-index:20;margin-bottom:12px}
-.pin .player{background:#000;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
-.pin .bar{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-bottom:1px solid var(--line)}
-.pin .holder{position:relative;width:100%;aspect-ratio:16/9}
-.actions{display:flex;gap:8px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;padding:10px 14px;background:#0e1115;border:1px solid var(--line);border-radius:10px;color:#fff;opacity:0;pointer-events:none;transition:opacity .18s}
-.footer{color:var(--muted);text-align:center;margin:18px 0}
-.empty{padding:40px;text-align:center;color:var(--muted)}
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f0f0f;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(90deg, #ff4d4d, #6600ff);
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  .video-container {
+    position: relative;
+    background: #1c1c1c;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    transition: transform 0.2s ease;
+  }
+  .video-container:hover {
+    transform: scale(1.02);
+  }
+  iframe, video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    aspect-ratio: 9/16;
+    border: none;
+  }
+  .controls {
+    text-align: center;
+    padding: 10px;
+  }
+  button {
+    background: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #e60000;
+  }
 </style>
 </head>
 <body>
-<div class="container">
-  <header class="header">
-    <div class="logo">VW</div>
-    <div>
-      <div class="site-title">Viral Wall Pro</div>
-      <div class="header-sub">Pin video • Autoplay (muted) • Playlist editor • Infinite scroll</div>
-    </div>
-
-    <div class="controls">
-      <button class="btn" id="importBtn">Import links</button>
-      <button class="btn primary" id="addBtn">Add video</button>
-    </div>
-  </header>
-
-  <!-- Editor panel -->
-  <section class="panel" id="editor">
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <input id="inputUrl" class="input" placeholder="Paste TikTok / Bilibili / Rumble / Facebook URL here" />
-      <select id="platform" class="btn" style="min-width:120px">
-        <option value="auto">Detect platform (recommended)</option>
-        <option value="tiktok">TikTok</option>
-        <option value="bilibili">Bilibili</option>
-        <option value="rumble">Rumble</option>
-        <option value="facebook">Facebook</option>
-      </select>
-      <button id="btnAdd" class="btn primary">Add</button>
-    </div>
-    <div class="small">Playlist editor: click a card to pin, drag to reorder (desktop). Changes saved locally + in URL for sharing (UTM & playlist encoded).</div>
-  </section>
-
-  <!-- Pinned player -->
-  <div class="pin">
-    <div class="player panel" id="pinned" aria-live="polite">
-      <div class="bar">
-        <div id="pinTitle">No video pinned · Click a card below to pin</div>
-        <div class="actions">
-          <button class="btn" id="copyShare">Copy share (UTM)</button>
-          <button class="btn" id="clearBtn">Clear playlist</button>
-        </div>
-      </div>
-      <div class="holder" id="pinHolder" style="display:grid;place-items:center;min-height:220px"><div class="empty">No video selected</div></div>
-    </div>
-  </div>
-
-  <!-- Grid -->
-  <main id="gridWrap">
-    <div id="grid" class="grid"></div>
-    <div id="loader" class="empty">Scroll down to load more...</div>
-  </main>
-
-  <div class="footer">© <span id="year"></span> • Viral Wall Pro</div>
+<header>🔥 Viral Video Hub 🔥</header>
+<div class="controls">
+  <input type="text" id="videoLink" placeholder="Paste video link here" style="padding:8px;width:250px;">
+  <button onclick="addVideo()">Add Video</button>
 </div>
-
-<div id="toast" class="toast">Copied</div>
-
-<!-- Optional: include official embed scripts (TikTok / Bilibili) -->
-<script async src="https://www.tiktok.com/embed.js"></script>
+<div id="videoGrid" class="grid"></div>
 <script>
-// ========== App logic ==========
-const STORAGE_KEY = 'viralwall_playlist_v1';
-const PAGE_SIZE = 4; // how many cards load per page (infinite scroll)
-let playlist = []; // array of clip objects {type, id, data, title}
-let page = 0;
-let pinnedIndex = null;
+const videoGrid = document.getElementById('videoGrid');
+let videos = [
+  { type: 'tiktok', src: 'https://www.tiktok.com/embed/7262097092343020859' },
+  { type: 'rumble', src: 'https://rumble.com/embed/v2z5n3u/?autoplay=2' },
+  { type: 'bilibili', src: 'https://player.bilibili.com/player.html?bvid=BV1xJ411k7PA&autoplay=1&muted=1' },
+  { type: 'facebook', src: 'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2F20531316728%2Fvideos%2F10154009990506729%2F&autoplay=1&mute=1' }
+];
 
-const inputUrl = document.getElementById('inputUrl');
-const platformSel = document.getElementById('platform');
-const btnAdd = document.getElementById('btnAdd');
-const addBtn = document.getElementById('addBtn');
-const grid = document.getElementById('grid');
-const pinHolder = document.getElementById('pinHolder');
-const pinTitle = document.getElementById('pinTitle');
-const copyShare = document.getElementById('copyShare');
-const loader = document.getElementById('loader');
-const toast = document.getElementById('toast');
-const year = document.getElementById('year'); year.textContent = new Date().getFullYear();
-
-// Utility: show toast
-function showToast(msg='Copied'){ toast.textContent = msg; toast.style.opacity=1; setTimeout(()=>toast.style.opacity=0,1200); }
-
-// Detect platform and extract id/data
-function detect(url, forced){
-  try{
-    const u = new URL(url);
-    const host = u.hostname.toLowerCase();
-    if(forced && forced!=='auto') return forced;
-    if(host.includes('tiktok.com')) return 'tiktok';
-    if(host.includes('bilibili.com')) return 'bilibili';
-    if(host.includes('rumble.com')) return 'rumble';
-    if(host.includes('facebook.com') || host.includes('fb.watch')) return 'facebook';
-    return null;
-  }catch(e){ return null; }
-}
-
-function extract(url){
-  // returns {type, id, data}
-  const type = detect(url, platformSel.value);
-  if(!type) return null;
-  if(type==='tiktok'){
-    // Accept many forms: /@user/video/123, /v/123, share links
-    const m = url.match(/video\/(\d+)/) || url.match(/\/v\/(\d+)/) || url.match(/(\d{9,})/);
-    const id = m ? m[1] : null;
-    return id? {type:'tiktok', id, data:null}: null;
-  }
-  if(type==='bilibili'){
-    // accept BV or av or cv
-    const mBV = url.match(/(BV[0-9A-Za-z]+)/);
-    const mAv = url.match(/av(\d+)/i);
-    if(mBV) return {type:'bilibili', id:mBV[1], data:null};
-    if(mAv) return {type:'bilibili', id:'av'+mAv[1], data:null};
-    return null;
-  }
-  if(type==='rumble'){
-    const m = url.match(/rumble.com\/([\w-]+)/i);
-    return m? {type:'rumble', id:m[1], data:null}: null;
-  }
-  if(type==='facebook'){
-    return {type:'facebook', id:null, data:url};
-  }
-  return null;
-}
-
-// Build embed src depending on type
-function buildSrc(item){
-  if(item.type==='tiktok') return `https://www.tiktok.com/embed/v2/${item.id}?autoplay=1&muted=1`;
-  if(item.type==='bilibili') return `https://player.bilibili.com/player.html?bvid=${item.id}&autoplay=1&muted=1`;
-  if(item.type==='rumble') return `https://rumble.com/embed/${item.id}/?autoplay=2`;
-  if(item.type==='facebook') return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(item.data)}&show_text=0&autoplay=1&mute=1`;
-  return '';
-}
-
-function buildIframe(src){
-  const allow = 'autoplay; encrypted-media; picture-in-picture';
-  return `<iframe src="${src}" allow="${allow}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-}
-
-// Render a page of cards (infinite scroll)
-function renderPage(){
-  const start = page*PAGE_SIZE; const end = start + PAGE_SIZE;
-  const slice = playlist.slice(start,end);
-  if(slice.length===0){ loader.textContent = 'No more items'; return; }
-  slice.forEach((item, idx)=>{
-    const el = document.createElement('article'); el.className='card';
-    el.innerHTML = `\n      <div class="top"><span class="chip">${item.type}</span><span class="chip">#${start+idx+1}</span></div>\n      <div class="holder">${buildIframe(buildSrc(item))}</div>\n      <div class="meta">\n        <p class="title">${escapeHtml(item.title||('Untitled '+(start+idx+1)))}</p>\n        <p class="source small">${escapeHtml(buildSrc(item))}</p>\n      </div>`;
-    el.addEventListener('click', ()=>{ pin(start+idx); });
-    grid.appendChild(el);
+function renderVideos(batch) {
+  batch.forEach(v => {
+    const container = document.createElement('div');
+    container.className = 'video-container';
+    let iframe = document.createElement('iframe');
+    iframe.src = v.src;
+    iframe.allow = 'autoplay; encrypted-media';
+    iframe.setAttribute('allowfullscreen', '');
+    container.appendChild(iframe);
+    let shareBtn = document.createElement('button');
+    shareBtn.textContent = 'Share';
+    shareBtn.onclick = () => {
+      const url = v.src + (v.src.includes('?') ? '&' : '?') + 'utm_source=viralhub&utm_medium=share';
+      navigator.clipboard.writeText(url);
+      alert('Link copied with UTM!');
+    };
+    container.appendChild(shareBtn);
+    videoGrid.appendChild(container);
   });
-  page++;
-  if((page*PAGE_SIZE) >= playlist.length) loader.textContent='End of list';
 }
 
-function escapeHtml(s){ return String(s).replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])); }
+renderVideos(videos);
 
-// Pin function
-function pin(index){
-  pinnedIndex = index;
-  const item = playlist[index];
-  pinTitle.textContent = `Pinned: ${item.title||item.type+' • '+(item.id||'')}`;
-  pinHolder.innerHTML = buildIframe(buildSrc(item));
-  // update URL hash to include pinned param
-  saveStateToHash();
+function addVideo() {
+  const link = document.getElementById('videoLink').value;
+  if(link) {
+    videos.push({ type: 'custom', src: link });
+    renderVideos([{ type: 'custom', src: link }]);
+    document.getElementById('videoLink').value = '';
+  }
 }
 
-// Save/load localStorage + hash
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist)); }
-function loadState(){ const raw = localStorage.getItem(STORAGE_KEY); if(raw) try{ playlist = JSON.parse(raw); }catch(e){} }
-
-function encodeForHash(){ // encode playlist compactly
-  return playlist.map(i=>`${i.type}:${encodeURIComponent(i.id||i.data||'')}`).join(',');
-}
-function saveStateToHash(){ const h = encodeForHash(); const pinned = pinnedIndex!=null?`|p=${pinnedIndex}`:''; history.replaceState(null,'', (h? '#'+h+pinned : location.pathname)); }
-function loadFromHash(){ try{ const h = location.hash.replace('#',''); if(!h) return false; const [listPart,pinnedPart] = h.split('|'); const parts = listPart.split(',').filter(Boolean); playlist = parts.map(p => { const [type,val] = p.split(':'); return { type, id:decodeURIComponent(val), data: decodeURIComponent(val), title:'' }; }); if(pinnedPart && pinnedPart.startsWith('p=')) pinnedIndex = parseInt(pinnedPart.split('=')[1]); return true; }catch(e){return false;} }
-
-// Add new clip
-function addClipFromUrl(raw){ const info = extract(raw); if(!info) { showToast('Invalid or unsupported URL'); return; } info.title = ''; playlist.push(info); saveState(); renderReset(); showToast('Added'); }
-
-btnAdd.addEventListener('click', ()=> addClipFromUrl(inputUrl.value.trim()));
-addBtn.addEventListener('click', ()=> inputUrl.focus());
-
-// Clear and render fresh (used after edits)
-function renderReset(){ grid.innerHTML=''; page=0; loader.textContent='Scroll down to load more...'; renderPage(); saveStateToHash(); renderControls(); }
-
-// Playlist editor helpers
-function renderControls(){ /* placeholder - could show count, reorder UI etc. */ }
-
-// Infinite scroll listener
-window.addEventListener('scroll',()=>{
-  const nearBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 600;
-  if(nearBottom) renderPage();
+window.addEventListener('scroll', () => {
+  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+    // load more videos (demo duplicates)
+    renderVideos(videos);
+  }
 });
-
-// Copy share link with UTM
-copyShare.addEventListener('click', ()=>{
-  const utm = `?utm_source=viralwall&utm_medium=share&utm_campaign=playlist`;
-  const url = `${location.origin}${location.pathname}#${encodeForHash()}${pinnedIndex!=null?('|p='+pinnedIndex):''}${utm}`;
-  navigator.clipboard.writeText(url).then(()=> showToast('Share link copied'));
-});
-
-// Import external: allow paste newline-separated links
-document.getElementById('importBtn').addEventListener('click', ()=>{
-  const txt = prompt('Paste newline-separated video links to import');
-  if(!txt) return; txt.split('\n').map(s=>s.trim()).filter(Boolean).forEach(s=>{ const i = extract(s); if(i) playlist.push(i); }); saveState(); renderReset(); showToast('Imported');
-});
-
-// On load: try hash -> localStorage -> empty
-(function init(){
-  const fromHash = loadFromHash();
-  if(!fromHash) loadState();
-  if(playlist.length===0) loader.textContent='No videos yet. Add a link above.';
-  renderReset();
-  if(pinnedIndex!=null && playlist[pinnedIndex]) pin(pinnedIndex); else if(playlist[0]) pin(0);
-})();
-
 </script>
 </body>
 </html>
