@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Viral Clips — TikTok Showcase</title>
+  <meta name="description" content="A fast, mobile‑first single‑file site to showcase your TikTok videos. Paste links, build a playlist, share with one tap." />
+  <meta name="theme-color" content="#111318" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Viral Clips — TikTok Showcase" />
+  <meta property="og:description" content="Paste TikTok links, autoplay-like feed, shareable playlist. Perfect for GitHub Pages." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dummyimage.com/1200x630/111318/ffffff&text=Viral+Clips" />
+  <meta property="og:url" content="https://<your-username>.github.io/<your-repo>/" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <style>
+    :root{--bg:#0b0b0f;--panel:#111318;--line:#1f2430;--fg:#f8fafc;--sub:#a3a9b6;--brand:#10b981;}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:inherit}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .hero{display:grid;gap:14px;grid-template-columns:1fr;align-items:center;margin:10px 0 18px}
+    .title{font-size:clamp(24px,3.2vw,36px);margin:0}
+    .sub{margin:0;color:var(--sub)}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+    .row{display:flex;gap:10px}
+    .input{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0e1016;color:var(--fg);outline:none}
+    .btn{padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,#171a22,#12141a);color:#fff;font-weight:700;cursor:pointer}
+    .btn:hover{border-color:#2b364a}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:18px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .card .top{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+    .chip{font-size:12px;color:var(--sub)}
+    .act{display:flex;gap:8px}
+    .ico{border:1px solid var(--line);border-radius:10px;background:#0f1218;padding:8px;cursor:pointer}
+    .frame{padding:0 0 0;}
+    .hint{font-size:12px;color:var(--sub);text-align:center;margin:10px 0}
+    .footer{color:var(--sub);text-align:center;margin:26px 0 12px}
+    .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0f1218;border:1px solid var(--line);color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .25s}
+    .toast.show{opacity:1}
+    /* Responsive 9:16 holder for embed */
+    .holder{position:relative;width:100%;aspect-ratio:9/16;background:#000}
+    .holder iframe, .holder blockquote{position:absolute;inset:0;width:100%;height:100%}
+    /* Light skeleton while loading */
+    .skeleton{background:linear-gradient(90deg,#0e1218,#121622,#0e1218);background-size:200% 100%;animation:s 1.4s infinite}
+    @keyframes s{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .playlist{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .pill{border:1px dashed var(--line);color:var(--sub);padding:6px 10px;border-radius:999px;font-size:12px}
+  </style>
+</head>
+<body>
+  <!--
+    HOW TO USE (GitHub Pages)
+    1) Save this file as index.html in your repo root.
+    2) Paste a TikTok link and click Add. Repeat to build a playlist.
+    3) Click Share to copy your playlist URL (links are encoded in the hash).
+    Note: Official TikTok embed controls playback; true autoplay with sound is not permitted by browsers/TikTok. We auto-focus and nudge scroll so the player is immediately visible for fast tap‑to‑play.
+  -->
+  <div class="wrap">
+    <header class="hero">
+      <h1 class="title">Viral Clips — TikTok Showcase</h1>
+      <p class="sub">Paste TikTok links. Build a shareable, mobile‑first feed. No extra libs.</p>
+      <div class="panel">
+        <div class="row">
+          <input id="in" class="input" placeholder="Paste TikTok link… (e.g. https://www.tiktok.com/@user/video/123456...)" inputmode="url" />
+          <button id="add" class="btn">Add</button>
+          <button id="share" class="btn" title="Copy shareable link">Share</button>
+        </div>
+        <div id="playlist" class="playlist" aria-live="polite"></div>
+        <p class="hint">Tip: Drag the pills to re‑order (desktop). Your playlist is stored in the URL and browser.</p>
+      </div>
+    </header>
+
+    <main id="grid" class="grid" aria-live="polite"></main>
+
+    <p class="footer">Made for GitHub Pages • Works with the official TikTok embed • No trackers</p>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Copied!</div>
+
+  <!-- TikTok embed script (required for official embeds) -->
+  <script async src="https://www.tiktok.com/embed.js"></script>
+
+  <script>
+    // --- State ---
+    const input = document.getElementById('in');
+    const addBtn = document.getElementById('add');
+    const shareBtn = document.getElementById('share');
+    const grid = document.getElementById('grid');
+    const list = document.getElementById('playlist');
+    const toast = document.getElementById('toast');
+
+    const isTikTok = (url) => /(^https?:\/\/(www\.)?tiktok\.com\/.+\/video\/(\d+))/i.test(url);
+    const getVideoId = (url) => {
+      const m = url.match(/video\/(\d+)/);
+      return m ? m[1] : null;
+    };
+
+    const state = {
+      items: [] // { id, url }
+    };
+
+    function saveToHash(){
+      const ids = state.items.map(x=>x.id).join(',');
+      history.replaceState(null, '', ids ? `#${ids}` : location.pathname);
+    }
+
+    function loadFromHash(){
+      const ids = (location.hash.replace('#','')||'').split(',').filter(Boolean);
+      state.items = ids.map(id => ({ id, url: `https://www.tiktok.com/@_/video/${id}` }));
+    }
+
+    function showToast(msg='Copied!'){
+      toast.textContent = msg; toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'), 1200);
+    }
+
+    function renderPlaylist(){
+      list.innerHTML = '';
+      state.items.forEach((item, i)=>{
+        const pill = document.createElement('span');
+        pill.className = 'pill'; pill.textContent = `#${i+1} · ${item.id}`;
+        pill.draggable = true;
+        pill.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', i); });
+        pill.addEventListener('dragover', e=>e.preventDefault());
+        pill.addEventListener('drop', e=>{
+          e.preventDefault();
+          const from = +e.dataTransfer.getData('text/plain');
+          const to = i;
+          const [moved] = state.items.splice(from,1);
+          state.items.splice(to,0,moved);
+          saveToHash(); renderPlaylist(); renderGrid();
+        });
+        list.appendChild(pill);
+      });
+    }
+
+    function embedHTML(url){
+      // Official TikTok embed via blockquote + script
+      // We wrap it in a 9:16 holder for consistent layout
+      return `\n<div class="holder skeleton">\n  <blockquote class="tiktok-embed" cite="${url}" data-video-id="${getVideoId(url)}" style="max-width: 605px; min-width: 325px;">\n    <section>Loading…</section>\n  </blockquote>\n</div>`;
+    }
+
+    function renderGrid(){
+      grid.innerHTML = '';
+      state.items.forEach((item, index)=>{
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `\n<div class="top">\n  <span class="chip">Clip ${index+1}</span>\n  <div class="act">\n    <button class="ico" title="Copy link" data-link="${item.url}">🔗</button>\n    <button class="ico" title="Remove">✖️</button>\n  </div>\n</div>\n<div class="frame">${embedHTML(item.url)}</div>`;
+        const [copyBtn, rmBtn] = card.querySelectorAll('.ico');
+        copyBtn.addEventListener('click',()=>{navigator.clipboard.writeText(item.url).then(()=>showToast('Link copied'));});
+        rmBtn.addEventListener('click',()=>{ state.items.splice(index,1); saveToHash(); renderPlaylist(); renderGrid(); });
+        grid.appendChild(card);
+      });
+      // Re-init TikTok embeds after DOM update
+      if (window.tiktokEmbedLoad) { window.tiktokEmbedLoad(); }
+    }
+
+    function addUrl(raw){
+      const url = raw.trim();
+      if(!isTikTok(url)) { showToast('Paste a valid TikTok link'); return; }
+      const id = getVideoId(url);
+      if(!id) { showToast('Could not read video id'); return; }
+      if(state.items.some(x=>x.id===id)) { showToast('Already added'); return; }
+      state.items.push({ id, url });
+      saveToHash(); renderPlaylist(); renderGrid();
+      // Focus newest card
+      setTimeout(()=>{
+        const last = grid.lastElementChild; last?.scrollIntoView({behavior:'smooth',block:'center'});
+      }, 50);
+    }
+
+    addBtn.addEventListener('click', ()=> addUrl(input.value));
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') addUrl(input.value); });
+    shareBtn.addEventListener('click', ()=>{
+      const share = location.href;
+      navigator.clipboard.writeText(share).then(()=>showToast('Share link copied'));
+    });
+
+    // Load from URL hash on start
+    loadFromHash(); renderPlaylist(); renderGrid();
+
+    // Autofocus input for quick paste on desktop
+    if (matchMedia('(pointer:fine)').matches) input.focus();
+  </script>
+</body>
+</html>
