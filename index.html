@@ -1,174 +1,999 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>My Viral Video Playlist</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    background: #0e0e0e;
-    color: white;
-  }
-  header {
-    padding: 1rem;
-    background: #111;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    border-bottom: 2px solid #222;
-  }
-  .controls {
-    padding: 1rem;
-    background: #181818;
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .controls input {
-    flex: 1;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 4px;
-  }
-  .controls button {
-    padding: 0.5rem 1rem;
-    background: #ff0050;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  .controls button:hover {
-    background: #e60048;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
-  }
-  .video-card {
-    background: #1a1a1a;
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    transition: transform 0.2s;
-  }
-  .video-card:hover {
-    transform: scale(1.02);
-  }
-  .remove-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0,0,0,0.6);
-    border: none;
-    color: white;
-    font-size: 14px;
-    padding: 4px 6px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  .share-btn {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background: rgba(0,0,0,0.6);
-    border: none;
-    color: white;
-    font-size: 14px;
-    padding: 4px 6px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamify - Filme și Seriale Auto-Actualizate</title>
+    <style>
+        :root {
+            --primary: #ff0050;
+            --primary-dark: #d10042;
+            --secondary: #00f2ea;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --card-bg: #1a1a1a;
+            --card-border: #2a2a2a;
+            --header-height: 70px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+        }
+        
+        /* Header și navigație */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 2rem;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            margin-right: 1.5rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        
+        .search-container {
+            position: relative;
+            margin-left: auto;
+            width: 300px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 50px;
+            border: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--light);
+            outline: none;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+            margin-left: 1.5rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 80, 0.3);
+        }
+        
+        /* Hero section */
+        .hero {
+            height: 500px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 3rem;
+        }
+        
+        .hero-slide.active {
+            opacity: 1;
+        }
+        
+        .hero-content {
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-description {
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Container și layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        /* Grid pentru filme/seriale */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 0, 80, 0.2);
+        }
+        
+        .card-thumb {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+        }
+        
+        .card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .content-card:hover .card-thumb img {
+            transform: scale(1.05);
+        }
+        
+        .card-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .card-content {
+            padding: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .card-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        /* Categorii */
+        .categories {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            scrollbar-width: thin;
+        }
+        
+        .categories::-webkit-scrollbar {
+            height: 5px;
+        }
+        
+        .category-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--light);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* Player modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--darker);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.5rem;
+        }
+        
+        .player-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .player-info {
+            padding: 1.5rem;
+        }
+        
+        .player-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .player-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--darker);
+            padding: 3rem 1rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--card-border);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.7rem;
+        }
+        
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 0 1rem;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            .search-container {
+                width: 200px;
+            }
+            
+            .hero {
+                height: 400px;
+            }
+            
+            .hero-content {
+                padding: 1rem;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .search-container {
+                display: none;
+            }
+            
+            .hero {
+                height: 350px;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-description {
+                font-size: 0.9rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+            
+            .card-thumb {
+                height: 200px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Loading animation */
+        .loading-bar {
+            height: 3px;
+            width: 0;
+            background: var(--primary);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            transition: width 0.3s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .auto-update-indicator {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 900;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
-  <header>🎥 My Viral Playlist</header>
-  <div class="controls">
-    <input type="text" id="videoLink" placeholder="Paste video link here..." />
-    <button onclick="addVideo()">Add Video</button>
-  </div>
-  <div id="videoGrid" class="grid"></div>
+    <div class="loading-bar" id="loadingBar"></div>
+    
+    <div class="auto-update-indicator" id="updateIndicator">
+        <span>Auto-Actualizare Activă</span>
+        <div class="pulse">🔴</div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
 
-<script>
-  const grid = document.getElementById('videoGrid');
-  let videos = [];
+    <!-- Header cu navigație -->
+    <header>
+        <div class="logo">Streamify</div>
+        <nav>
+            <a href="#" class="active">Acasă</a>
+            <a href="#">Filme</a>
+            <a href="#">Seriale</a>
+            <a href="#">Categorii</a>
+            <a href="#">Tendințe</a>
+        </nav>
+        <div class="search-container">
+            <div class="search-icon">🔍</div>
+            <input type="text" class="search-input" placeholder="Caută filme, seriale...">
+        </div>
+        <div class="user-actions">
+            <button class="btn btn-primary">Autentificare</button>
+        </div>
+    </header>
 
-  function detectPlatform(url) {
-    if (url.includes('tiktok.com')) return 'tiktok';
-    if (url.includes('bilibili.com')) return 'bilibili';
-    if (url.includes('facebook.com')) return 'facebook';
-    if (url.includes('rumble.com')) return 'rumble';
-    if (url.match(/\.mp4$/)) return 'mp4';
-    return 'unknown';
-  }
+    <!-- Hero slider -->
+    <div class="hero">
+        <div class="hero-slide active" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80');">
+            <div class="hero-content">
+                <h2 class="hero-title">John Wick 4: Capitolul 4</h2>
+                <p class="hero-description">John Wick descoperă un modalitate de a învinge Consiliul de Superiori. Dar înainte de a-și putea câștiga libertatea, Wick trebuie să se confrunte cu un nou inamic.</p>
+                <button class="btn btn-primary">Vezi acum</button>
+            </div>
+        </div>
+    </div>
 
-  function createEmbed(url) {
-    const platform = detectPlatform(url);
-    if (platform === 'tiktok') {
-      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
-    }
-    if (platform === 'bilibili') {
-      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
-    }
-    if (platform === 'facebook') {
-      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
-    }
-    if (platform === 'rumble') {
-      return `<iframe src="${url}" frameborder="0" allow="autoplay; fullscreen" muted></iframe>`;
-    }
-    if (platform === 'mp4') {
-      return `<video src="${url}" autoplay muted loop playsinline controls></video>`;
-    }
-    return `<a href="${url}" target="_blank">Open Video</a>`;
-  }
+    <div class="container">
+        <!-- Categorii -->
+        <div class="categories">
+            <button class="category-btn active">Toate</button>
+            <button class="category-btn">Acțiune</button>
+            <button class="category-btn">Comedie</button>
+            <button class="category-btn">Dramă</button>
+            <button class="category-btn">Horror</button>
+            <button class="category-btn">SF</button>
+            <button class="category-btn">Romantic</button>
+            <button class="category-btn">Animație</button>
+            <button class="category-btn">Documentare</button>
+        </div>
 
-  function addVideo() {
-    const url = document.getElementById('videoLink').value.trim();
-    if (!url) return;
-    videos.push(url);
-    renderVideos();
-    document.getElementById('videoLink').value = '';
-  }
+        <!-- Filme populare -->
+        <div class="section">
+            <div class="section-title">
+                <h2>Filme populare</h2>
+                <a href="#" class="view-all">Vezi toate</a>
+            </div>
+            <div class="content-grid" id="popularMovies">
+                <!-- Filmele vor fi încărcate din JavaScript -->
+            </div>
+        </div>
 
-  function removeVideo(index) {
-    videos.splice(index, 1);
-    renderVideos();
-  }
+        <!-- Seriale populare -->
+        <div class="section">
+            <div class="section-title">
+                <h2>Seriale populare</h2>
+                <a href="#" class="view-all">Vezi toate</a>
+            </div>
+            <div class="content-grid" id="popularSeries">
+                <!-- Serialele vor fi încărcate din JavaScript -->
+            </div>
+        </div>
 
-  function shareVideo(url) {
-    const shareUrl = `${url}?utm_source=myplaylist&utm_medium=share_button`;
-    navigator.clipboard.writeText(shareUrl);
-    alert('Share link copied: ' + shareUrl);
-  }
+        <!-- Filme noi -->
+        <div class="section">
+            <div class="section-title">
+                <h2>Filme noi</h2>
+                <a href="#" class="view-all">Vezi toate</a>
+            </div>
+            <div class="content-grid" id="newMovies">
+                <!-- Filmele noi vor fi încărcate din JavaScript -->
+            </div>
+        </div>
 
-  function renderVideos() {
-    grid.innerHTML = '';
-    videos.forEach((url, index) => {
-      const card = document.createElement('div');
-      card.className = 'video-card';
-      card.innerHTML = `
-        ${createEmbed(url)}
-        <button class="remove-btn" onclick="removeVideo(${index})">✖</button>
-        <button class="share-btn" onclick="shareVideo('${url}')">🔗</button>
-      `;
-      grid.appendChild(card);
-    });
-  }
+        <!-- Seriale noi -->
+        <div class="section">
+            <div class="section-title">
+                <h2>Seriale noi</h2>
+                <a href="#" class="view-all">Vezi toate</a>
+            </div>
+            <div class="content-grid" id="newSeries">
+                <!-- Serialele noi vor fi încărcate din JavaScript -->
+            </div>
+        </div>
+    </div>
 
-  // Infinite scroll simulation
-  window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-      // Load more if needed
-    }
-  });
-</script>
+    <!-- Modal pentru player -->
+    <div class="modal" id="playerModal">
+        <div class="modal-content">
+            <div class="modal-close" id="closeModal">×</div>
+            <div class="player-container">
+                <iframe id="playerFrame" src="" allowfullscreen></iframe>
+            </div>
+            <div class="player-info">
+                <h3 class="player-title" id="playerTitle">Titlul filmului</h3>
+                <div class="player-actions">
+                    <button class="btn btn-primary">Adaugă la favorite</button>
+                    <button class="btn">Share</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Streamify</h3>
+                <p>Platformă auto-actualizată cu cele mai noi filme și seriale. Conținut actualizat automat la fiecare oră.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Legături rapide</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Acasă</a></li>
+                    <li><a href="#">Filme</a></li>
+                    <li><a href="#">Seriale</a></li>
+                    <li><a href="#">Categorii</a></li>
+                    <li><a href="#">Tendințe</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Suport</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Politica de confidențialitate</a></li>
+                    <li><a href="#">Termeni și condiții</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Streamify. Toate drepturile rezervate. Conținut actualizat automat.
+        </div>
+    </footer>
+
+    <script>
+        // Date pentru filme și seriale (simulare)
+        let contentData = {
+            popularMovies: [
+                { id: 1, title: "John Wick 4", year: 2023, rating: 8.5, duration: "2h 49m", thumbnail: "https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 2, title: "Avatar: Calea Apei", year: 2022, rating: 7.8, duration: "3h 12m", thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: false },
+                { id: 3, title: "Top Gun: Maverick", year: 2022, rating: 8.2, duration: "2h 17m", thumbnail: "https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: false },
+                { id: 4, title: "Black Panther: Wakanda Forever", year: 2022, rating: 7.2, duration: "2h 41m", thumbnail: "https://images.unsplash.com/photo-1654055130839-5d6fd90ad951?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: false }
+            ],
+            popularSeries: [
+                { id: 101, title: "The Last of Us", year: 2023, rating: 9.1, seasons: 1, episodes: 9, thumbnail: "https://images.unsplash.com/photo-1642618215095-2de42c661680?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 102, title: "House of the Dragon", year: 2022, rating: 8.5, seasons: 1, episodes: 10, thumbnail: "https://images.unsplash.com/photo-1664280400102-1047e2a92ba0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: false },
+                { id: 103, title: "The Mandalorian", year: 2023, rating: 8.8, seasons: 3, episodes: 24, thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 104, title: "Stranger Things", year: 2022, rating: 8.7, seasons: 4, episodes: 34, thumbnail: "https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: false }
+            ],
+            newMovies: [
+                { id: 201, title: "Creed III", year: 2023, rating: 7.5, duration: "1h 56m", thumbnail: "https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 202, title: "Ant-Man și Viespea: Quantumania", year: 2023, rating: 6.5, duration: "2h 5m", thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 203, title: "Shazam! Furia Zeilor", year: 2023, rating: 6.2, duration: "2h 10m", thumbnail: "https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 204, title: "Scream VI", year: 2023, rating: 7.1, duration: "2h 2m", thumbnail: "https://images.unsplash.com/photo-1654055130839-5d6fd90ad951?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true }
+            ],
+            newSeries: [
+                { id: 301, title: "The Night Agent", year: 2023, rating: 7.7, seasons: 1, episodes: 10, thumbnail: "https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 302, title: "Shadow and Bone", year: 2023, rating: 7.6, seasons: 2, episodes: 16, thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 303, title: "You", year: 2023, rating: 7.8, seasons: 4, episodes: 40, thumbnail: "https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true },
+                { id: 304, title: "Outer Banks", year: 2023, rating: 7.6, seasons: 3, episodes: 30, thumbnail: "https://images.unsplash.com/photo-1654055130839-5d6fd90ad951?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80", isNew: true }
+            ]
+        };
+
+        // Lista de titluri și imagini pentru a simula actualizări
+        const movieTitles = [
+            "Oppenheimer", "Barbie", "Dune: Part Two", "Mission: Impossible 7", 
+            "The Flash", "Indiana Jones 5", "Transformers: Rise of the Beasts",
+            "Fast X", "The Little Mermaid", "Spider-Man: Across the Spider-Verse",
+            "Guardians of the Galaxy Vol. 3", "The Marvels", "Aquaman 2", "Wonka"
+        ];
+        
+        const seriesTitles = [
+            "The Witcher: Blood Origin", "The Crown", "Loki Season 2", "The Sandman",
+            "Wednesday", "The Lord of the Rings: The Rings of Power", "Andor",
+            "She-Hulk", "Obi-Wan Kenobi", "Moon Knight", "Hawkeye", "Ms. Marvel"
+        ];
+        
+        const thumbnails = [
+            "https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1654055130839-5d6fd90ad951?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1642618215095-2de42c661680?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1664280400102-1047e2a92ba0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1654578118277-53ca56f4a1f0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80",
+            "https://images.unsplash.com/photo-1654298108395-454b52000d54?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80"
+        ];
+
+        // DOM elements
+        const videoGrid = document.getElementById('videoGrid');
+        const loadingBar = document.getElementById('loadingBar');
+        const notification = document.getElementById('notification');
+        const updateIndicator = document.getElementById('updateIndicator');
+        
+        // Funcție pentru a randă conținutul
+        function renderContent() {
+            renderSection('popularMovies', contentData.popularMovies, 'film');
+            renderSection('popularSeries', contentData.popularSeries, 'serial');
+            renderSection('newMovies', contentData.newMovies, 'film');
+            renderSection('newSeries', contentData.newSeries, 'serial');
+        }
+
+        // Funcție pentru a randă o secțiune specifică
+        function renderSection(sectionId, data, type) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            
+            section.innerHTML = '';
+            
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'content-card fade-in';
+                card.innerHTML = `
+                    <div class="card-thumb">
+                        <img src="${item.thumbnail}" alt="${item.title}">
+                        ${item.isNew ? '<div class="card-badge">NOU</div>' : ''}
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-info">
+                            <span>${item.year}</span>
+                            <span class="card-rating">⭐ ${item.rating}</span>
+                        </div>
+                        <div class="card-info">
+                            <span>${type === 'film' ? item.duration : `${item.seasons} Sezoane`}</span>
+                            <span>${type === 'serial' ? `${item.episodes} Episoade` : ''}</span>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    openPlayer(item);
+                });
+                
+                section.appendChild(card);
+            });
+        }
+
+        // Funcție pentru a deschide player-ul
+        function openPlayer(item) {
+            const modal = document.getElementById('playerModal');
+            const playerTitle = document.getElementById('playerTitle');
+            const playerFrame = document.getElementById('playerFrame');
+            
+            playerTitle.textContent = item.title;
+            
+            // Aici s-ar încărca URL-ul corect al videoclipului
+            // playerFrame.src = `https://example.com/player/${item.id}`;
+            
+            // Pentru demo, afișăm un mesaj
+            playerFrame.src = '';
+            playerFrame.srcdoc = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            background: #000;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            color: white;
+                            font-family: Arial, sans-serif;
+                        }
+                        .demo-player {
+                            text-align: center;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="demo-player">
+                        <h2>${item.title}</h2>
+                        <p>Player-ul se va încărca aici în versiunea completă</p>
+                        <p>Pentru demo, conținutul este simulat</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        // Funcție pentru a închide player-ul
+        function closePlayer() {
+            const modal = document.getElementById('playerModal');
+            const playerFrame = document.getElementById('playerFrame');
+            
+            modal.classList.remove('active');
+            playerFrame.src = '';
+        }
+
+        // Funcție pentru a simula încărcarea conținutului
+        function simulateContentLoading() {
+            loadingBar.style.width = '0';
+            loadingBar.style.transition = 'width 3s ease';
+            
+            setTimeout(() => {
+                loadingBar.style.width = '30%';
+            }, 100);
+            
+            setTimeout(() => {
+                loadingBar.style.width = '60%';
+            }, 800);
+            
+            setTimeout(() => {
+                loadingBar.style.width = '100%';
+                renderContent();
+                
+                setTimeout(() => {
+                    loadingBar.style.opacity = '0';
+                    showNotification('Conținut actualizat cu succes!');
+                }, 300);
+            }, 1500);
+        }
+
+        // Funcție pentru a afișa notificări
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Funcție pentru a adăuga conținut nou (simulare)
+        function addNewContent() {
+            // Adăugăm un film nou la începutul listei
+            const newMovie = {
+                id: Date.now(),
+                title: movieTitles[Math.floor(Math.random() * movieTitles.length)],
+                year: 2023,
+                rating: (Math.random() * 3 + 7).toFixed(1),
+                duration: Math.floor(Math.random() * 120 + 90) + "m",
+                thumbnail: thumbnails[Math.floor(Math.random() * thumbnails.length)],
+                isNew: true
+            };
+            
+            // Adăugăm un serial nou la începutul listei
+            const newSeries = {
+                id: Date.now() + 1,
+                title: seriesTitles[Math.floor(Math.random() * seriesTitles.length)],
+                year: 2023,
+                rating: (Math.random() * 3 + 7).toFixed(1),
+                seasons: Math.floor(Math.random() * 3 + 1),
+                episodes: Math.floor(Math.random() * 20 + 5),
+                thumbnail: thumbnails[Math.floor(Math.random() * thumbnails.length)],
+                isNew: true
+            };
+            
+            // Actualizăm listele de conținut
+            contentData.newMovies.unshift(newMovie);
+            contentData.newSeries.unshift(newSeries);
+            
+            // Limităm la 12 elemente pe listă
+            if (contentData.newMovies.length > 12) contentData.newMovies.pop();
+            if (contentData.newSeries.length > 12) contentData.newSeries.pop();
+            
+            // Re-randăm conținutul
+            renderSection('newMovies', contentData.newMovies, 'film');
+            renderSection('newSeries', contentData.newSeries, 'serial');
+            
+            // Afișăm notificare
+            showNotification(`Conținut nou adăugat: ${newMovie.title} și ${newSeries.title}`);
+        }
+
+        // Inițializare la încărcarea paginii
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulăm încărcarea inițială a conținutului
+            simulateContentLoading();
+            
+            // Eveniment pentru închiderea player-ului
+            document.getElementById('closeModal').addEventListener('click', closePlayer);
+            
+            // Eveniment pentru taste (ESC pentru a închide player-ul)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closePlayer();
+                }
+            });
+            
+            // Eveniment pentru categoriile de filtre
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.category-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Simulăm încărcarea conținutului pentru categorie
+                    loadingBar.style.opacity = '1';
+                    loadingBar.style.width = '0';
+                    setTimeout(() => {
+                        loadingBar.style.width = '100%';
+                        setTimeout(() => {
+                            loadingBar.style.opacity = '0';
+                            showNotification(`Filtru aplicat: ${this.textContent}`);
+                        }, 300);
+                    }, 500);
+                });
+            });
+            
+            // Configurăm actualizarea automată la fiecare 30 de secunde (pentru demo)
+            setInterval(addNewContent, 30000);
+            
+            // Adăugăm și un buton pentru a forța actualizarea
+            const forceUpdateBtn = document.createElement('button');
+            forceUpdateBtn.textContent = 'Actualizează acum';
+            forceUpdateBtn.className = 'btn';
+            forceUpdateBtn.style.marginLeft = '1rem';
+            forceUpdateBtn.addEventListener('click', addNewContent);
+            
+            updateIndicator.appendChild(forceUpdateBtn);
+        });
+    </script>
 </body>
 </html>
